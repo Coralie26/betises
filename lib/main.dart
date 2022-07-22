@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
-void main() {
+
+
+void main() async {
+
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   // This widget is the root of your application.
@@ -49,6 +54,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  void initState() {
+    super.initState();
+  }
 
   void _incrementCounter() {
     setState(() {

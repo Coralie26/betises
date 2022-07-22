@@ -25,8 +25,30 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 31
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -42,13 +64,24 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    flavorDimensions "distribute"
+    productFlavors {
+        appCenter {
+            dimension "distribute"
+        }
+
+        googlePlay {
+            dimension "distribute"
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.test_project"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 16
+        targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -60,6 +93,17 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    // This is likely needed, see https://github.com/flutter/flutter/issues/58247
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+
+    dependencies {
+        def appCenterSdkVersion = '1.10.0'
+        implementation "com.microsoft.appcenter:appcenter:${appCenterSdkVersion}"
+    }
 }
 
 flutter {
@@ -68,4 +112,15 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 30 //This is the version in my android/app/build.gradle
+                buildToolsVersion "28.0.3"
+            }
+        }
+    }
 }
